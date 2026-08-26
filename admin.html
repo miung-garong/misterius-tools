@@ -217,6 +217,11 @@
     </button>
 
     <div id="licenses"></div>
+    <h2 style="margin-top:30px;">
+  DEVICES
+</h2>
+
+<div id="devices"></div>
 
     <div
       id="panelMessage"
@@ -284,6 +289,7 @@ async function login() {
       "block";
 
     loadLicenses();
+    loadDevices();
 
   } catch (error) {
 
@@ -301,97 +307,89 @@ async function login() {
    LOAD LICENSE
 ========================= */
 
-async function loadLicenses() {
+async function loadDevices() {
 
   const container =
-    document.getElementById("licenses");
+    document.getElementById("devices");
+
+  if (!container) return;
 
   container.innerHTML =
-    "<p>Memuat license...</p>";
+    "<p>Memuat perangkat...</p>";
 
   try {
 
     const response =
-      await fetch(`${API}/admin/licenses`, {
-
-        headers: {
-          "Authorization": `Bearer ${adminToken}`
+      await fetch(
+        `${API}/admin/devices`,
+        {
+          headers: {
+            "Authorization":
+              `Bearer ${adminToken}`
+          }
         }
-
-      });
+      );
 
     const data =
       await response.json();
 
     if (!response.ok) {
-
       throw new Error(
-        data.message || "Gagal mengambil data."
+        data.message ||
+        "Gagal mengambil device."
       );
-
     }
 
     container.innerHTML = "";
 
-    if (!data.licenses.length) {
+    if (!data.devices.length) {
 
       container.innerHTML =
-        "<p>Tidak ada license.</p>";
+        "<p>Belum ada perangkat.</p>";
 
       return;
 
     }
 
-    data.licenses.forEach(license => {
+    data.devices.forEach(device => {
 
       const div =
         document.createElement("div");
 
       div.className = "license";
 
-      const isActive =
-        license.status === "active";
+      const online =
+        device.status === "online";
 
       div.innerHTML = `
 
         <div class="license-key">
-          ${escapeHtml(license.license_key)}
+          Device:
+          ${escapeHtml(device.device_id.slice(0, 8))}
         </div>
 
-        <div class="status ${isActive ? "active" : "revoked"}">
-          ${isActive ? "🟢 ONLINE" : "🔴 OFFLINE"}
+        <div class="status ${online ? "active" : "revoked"}">
+          ${online
+            ? "🟢 ONLINE"
+            : "🔴 OFFLINE"}
         </div>
 
         <div class="info">
 
-          Created:
-          ${license.created_at || "-"}
+          License:
+          ${escapeHtml(device.license_key)}
+
           <br>
 
-          Expired:
-          ${license.expires_at || "Tidak ada"}
+          First Seen:
+          ${escapeHtml(device.first_seen)}
+
           <br>
 
           Last Seen:
-          ${license.last_seen || "Belum digunakan"}
+          ${escapeHtml(device.last_seen)}
 
         </div>
-
-        <br>
-
-        <button
-          class="${isActive ? "deactivate" : "activate"}"
-          onclick="changeStatus(
-            '${escapeJs(license.license_key)}',
-            '${isActive ? "revoked" : "active"}'
-          )"
-        >
-
-          ${isActive
-            ? "🔴 MATIKAN LICENSE"
-            : "🟢 AKTIFKAN LICENSE"}
-
-        </button>
 
       `;
 
@@ -534,6 +532,16 @@ function escapeJs(value) {
 
 }
 
+// REFRESH DEVICE SETIAP 10 DETIK
+
+setInterval(() => {
+
+  if (adminToken) {
+    loadDevices();
+  }
+
+}, 10000);
+  
 </script>
 
 </body>
