@@ -1,26 +1,94 @@
-const API_BASE = localStorage.getItem('misterius_api') || 'https://YOUR-SERVER-DOMAIN.example.com';
-const DEVICE_KEY='misterius_device_id';
-let deviceId=localStorage.getItem(DEVICE_KEY);
-if(!deviceId){ deviceId=crypto.randomUUID(); localStorage.setItem(DEVICE_KEY,deviceId); }
-document.getElementById('deviceIdShort').textContent=deviceId.slice(0,8)+'…';
-const gate=document.getElementById('authGate'), shell=document.getElementById('appShell'), form=document.getElementById('licenseForm'), msg=document.getElementById('authMessage');
-function unlock(){gate.style.display='none';shell.classList.add('unlocked');}
-async function check(){
-  if(!API_BASE || API_BASE.includes('YOUR-SERVER-DOMAIN')) return;
-  try{const r=await fetch(API_BASE+'/api/health',{cache:'no-store'}); if(!r.ok) throw new Error();}catch(e){msg.textContent='Server lisensi tidak dapat dihubungi.';}
+const API_BASE = 'https://vins-license-api.alvinstamvans.workers.dev';
+
+const gate = document.getElementById('authGate');
+const shell = document.getElementById('appShell');
+const form = document.getElementById('licenseForm');
+const msg = document.getElementById('authMessage');
+
+function unlock() {
+  gate.style.display = 'none';
+  shell.classList.add('unlocked');
 }
-form.addEventListener('submit',async e=>{
- e.preventDefault(); msg.textContent='Memeriksa lisensi…';
- if(!API_BASE || API_BASE.includes('YOUR-SERVER-DOMAIN')) { msg.textContent='Server lisensi belum dikonfigurasi.'; return; }
- try{
-   const r=await fetch(API_BASE+'/api/activate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:document.getElementById('licenseKey').value,deviceId,userAgent:navigator.userAgent})});
-   const d=await r.json(); if(!r.ok) throw new Error(d.error||'Akses ditolak');
-   localStorage.setItem('misterius_session',d.session); unlock();
- }catch(err){msg.textContent=err.message;}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  msg.textContent = 'Memeriksa lisensi…';
+
+  const licenseKey = document
+    .getElementById('licenseKey')
+    .value
+    .trim();
+
+  if (!licenseKey) {
+    msg.textContent = 'License Key wajib diisi.';
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        license_key: licenseKey
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.valid) {
+      msg.textContent = data.message || 'License tidak valid.';
+      return;
+    }
+
+    // Simpan license agar tidak perlu memasukkan ulang
+    localStorage.setItem('misterius_license', licenseKey);
+
+    msg.textContent = 'License valid. Membuka tools…';
+
+    unlock();
+
+  } catch (error) {
+    console.error(error);
+    msg.textContent = 'Server lisensi tidak dapat dihubungi.';
+  }
 });
-// Periodic server re-check. A revoked device will be locked on the next check.
-setInterval(async()=>{
- const session=localStorage.getItem('misterius_session'); if(!session) return;
- try{const r=await fetch(API_BASE+'/api/check',{headers:{Authorization:'Bearer '+session},cache:'no-store'}); if(!r.ok){localStorage.removeItem('misterius_session'); location.reload();}}catch(e){}
-},60000);
-check();
+
+// Coba gunakan license yang sudah tersimpan
+async function checkSavedLicense() {
+
+  const savedLicense = localStorage.getItem('misterius_license');
+
+  if (!savedLicense) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(`${API_BASE}/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        license_key: savedLicense
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.valid) {
+      unlock();
+    } else {
+      localStorage.removeItem('misterius_license');
+      msg.textContent = data.message || 'License tidak valid.';
+    }
+
+  } catch (error) {
+    msg.textContent = 'Server lisensi tidak dapat dihubungi.';
+  }
+}
+
+checkSavedLicense();
