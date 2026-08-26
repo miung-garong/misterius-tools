@@ -30,6 +30,11 @@
       margin-bottom: 5px;
     }
 
+    h2 {
+      color: #fff;
+      margin-top: 30px;
+    }
+
     .subtitle {
       color: #888;
       margin-bottom: 30px;
@@ -60,16 +65,18 @@
       padding: 10px 16px;
       cursor: pointer;
       font-weight: bold;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    button:hover {
+      opacity: .85;
     }
 
     .login-btn {
       width: 100%;
       background: #e50909;
       color: white;
-    }
-
-    .login-btn:hover {
-      background: #ff2020;
     }
 
     .logout-btn {
@@ -81,7 +88,31 @@
     .refresh-btn {
       background: #222;
       color: white;
-      margin-bottom: 15px;
+    }
+
+    .create-btn {
+      background: #e50909;
+      color: white;
+    }
+
+    .generate-btn {
+      background: #333;
+      color: white;
+    }
+
+    .activate {
+      background: #16803a;
+      color: white;
+    }
+
+    .deactivate {
+      background: #b51212;
+      color: white;
+    }
+
+    .delete {
+      background: #444;
+      color: white;
     }
 
     .license {
@@ -96,6 +127,7 @@
       font-weight: bold;
       font-size: 17px;
       margin-bottom: 10px;
+      word-break: break-all;
     }
 
     .status {
@@ -117,20 +149,11 @@
       color: #ff4d4d;
     }
 
-    .activate {
-      background: #16803a;
-      color: white;
-    }
-
-    .deactivate {
-      background: #b51212;
-      color: white;
-    }
-
     .info {
       color: #999;
       font-size: 13px;
       line-height: 1.7;
+      margin-bottom: 10px;
     }
 
     .message {
@@ -145,6 +168,52 @@
     .top {
       overflow: hidden;
       margin-bottom: 25px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .stat {
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 10px;
+      padding: 15px 20px;
+      min-width: 140px;
+    }
+
+    .stat-number {
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      color: #888;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .online-number {
+      color: #4dff75;
+    }
+
+    .offline-number {
+      color: #ff4d4d;
+    }
+
+    .device-id {
+      font-family: monospace;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .small {
+      color: #777;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -204,24 +273,132 @@
       </button>
 
       <div class="subtitle">
-        Kelola status license
+        Kelola license dan monitor perangkat
       </div>
 
     </div>
 
-    <button
-      class="refresh-btn"
-      onclick="loadLicenses()"
-    >
-      🔄 REFRESH
-    </button>
 
-    <div id="licenses"></div>
-    <h2 style="margin-top:30px;">
-  DEVICES
-</h2>
+    <!-- STATS -->
 
-<div id="devices"></div>
+    <div class="stats">
+
+      <div class="stat">
+        <div
+          id="licenseCount"
+          class="stat-number"
+        >
+          0
+        </div>
+
+        <div class="stat-label">
+          TOTAL LICENSE
+        </div>
+      </div>
+
+
+      <div class="stat">
+        <div
+          id="onlineCount"
+          class="stat-number online-number"
+        >
+          0
+        </div>
+
+        <div class="stat-label">
+          DEVICE ONLINE
+        </div>
+      </div>
+
+
+      <div class="stat">
+        <div
+          id="offlineCount"
+          class="stat-number offline-number"
+        >
+          0
+        </div>
+
+        <div class="stat-label">
+          DEVICE OFFLINE
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- CREATE LICENSE -->
+
+    <div class="card">
+
+      <h2 style="margin-top:0;">
+        CREATE LICENSE
+      </h2>
+
+      <input
+        id="newLicenseKey"
+        type="text"
+        placeholder="Kosongkan untuk Generate otomatis"
+      >
+
+      <button
+        class="generate-btn"
+        onclick="generateKey()"
+      >
+        🎲 GENERATE KEY
+      </button>
+
+      <button
+        class="create-btn"
+        onclick="createLicense()"
+      >
+        ➕ CREATE LICENSE
+      </button>
+
+      <div
+        id="createMessage"
+        class="message"
+      ></div>
+
+    </div>
+
+
+    <!-- LICENSES -->
+
+    <div class="card">
+
+      <h2 style="margin-top:0;">
+        LICENSES
+      </h2>
+
+      <button
+        class="refresh-btn"
+        onclick="loadLicenses()"
+      >
+        🔄 REFRESH LICENSE
+      </button>
+
+      <div id="licenses"></div>
+
+    </div>
+
+
+    <!-- DEVICES -->
+
+    <div class="card">
+
+      <h2 style="margin-top:0;">
+        DEVICES
+      </h2>
+
+      <div
+        id="devices"
+      >
+        Memuat perangkat...
+      </div>
+
+    </div>
+
 
     <div
       id="panelMessage"
@@ -248,12 +425,17 @@ let adminToken = "";
 async function login() {
 
   const token =
-    document.getElementById("adminToken").value.trim();
+    document
+      .getElementById("adminToken")
+      .value
+      .trim();
 
   if (!token) {
 
-    document.getElementById("loginMessage").textContent =
-      "Admin Token wajib diisi.";
+    document
+      .getElementById("loginMessage")
+      .textContent =
+        "Admin Token wajib diisi.";
 
     return;
   }
@@ -263,65 +445,8 @@ async function login() {
   try {
 
     const response =
-      await fetch(`${API}/admin/licenses`, {
-
-        headers: {
-          "Authorization": `Bearer ${adminToken}`
-        }
-
-      });
-
-    const data =
-      await response.json();
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.message || "Token salah."
-      );
-
-    }
-
-    document.getElementById("login").style.display =
-      "none";
-
-    document.getElementById("panel").style.display =
-      "block";
-
-    loadLicenses();
-    loadDevices();
-
-  } catch (error) {
-
-    adminToken = "";
-
-    document.getElementById("loginMessage").textContent =
-      "❌ " + error.message;
-
-  }
-
-}
-
-
-/* =========================
-   LOAD LICENSE
-========================= */
-
-async function loadDevices() {
-
-  const container =
-    document.getElementById("devices");
-
-  if (!container) return;
-
-  container.innerHTML =
-    "<p>Memuat perangkat...</p>";
-
-  try {
-
-    const response =
       await fetch(
-        `${API}/admin/devices`,
+        `${API}/admin/licenses`,
         {
           headers: {
             "Authorization":
@@ -334,15 +459,451 @@ async function loadDevices() {
       await response.json();
 
     if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Token salah."
+      );
+
+    }
+
+    document
+      .getElementById("login")
+      .style.display =
+        "none";
+
+    document
+      .getElementById("panel")
+      .style.display =
+        "block";
+
+    loadLicenses();
+    loadDevices();
+
+  } catch (error) {
+
+    adminToken = "";
+
+    document
+      .getElementById("loginMessage")
+      .textContent =
+        "❌ " + error.message;
+
+  }
+
+}
+
+
+/* =========================
+   GENERATE KEY
+========================= */
+
+function generateKey() {
+
+  const random =
+    crypto.randomUUID()
+      .replace(/-/g, "")
+      .substring(0, 16)
+      .toUpperCase();
+
+  const key =
+    `VINS-${random}`;
+
+  document
+    .getElementById("newLicenseKey")
+    .value =
+      key;
+
+}
+
+
+/* =========================
+   CREATE LICENSE
+========================= */
+
+async function createLicense() {
+
+  const input =
+    document
+      .getElementById("newLicenseKey");
+
+  let licenseKey =
+    input.value.trim();
+
+
+  const message =
+    document
+      .getElementById("createMessage");
+
+
+  message.textContent =
+    "Membuat license...";
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/admin/license/create`,
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${adminToken}`
+
+          },
+
+          body:
+            JSON.stringify({
+
+              license_key:
+                licenseKey || null
+
+            })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Gagal membuat license."
+      );
+
+    }
+
+
+    input.value = "";
+
+
+    message.textContent =
+      "✅ License berhasil dibuat: " +
+      data.license_key;
+
+
+    await loadLicenses();
+
+
+  } catch (error) {
+
+    message.textContent =
+      "❌ " + error.message;
+
+  }
+
+}
+
+
+/* =========================
+   LOAD LICENSES
+========================= */
+
+async function loadLicenses() {
+
+  const container =
+    document.getElementById(
+      "licenses"
+    );
+
+  container.innerHTML =
+    "<p>Memuat license...</p>";
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/admin/licenses`,
+        {
+
+          headers: {
+
+            "Authorization":
+              `Bearer ${adminToken}`
+
+          }
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Gagal mengambil license."
+      );
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    const licenses =
+      data.licenses || [];
+
+
+    document
+      .getElementById(
+        "licenseCount"
+      )
+      .textContent =
+        licenses.length;
+
+
+    if (!licenses.length) {
+
+      container.innerHTML =
+        "<p>Belum ada license.</p>";
+
+      return;
+
+    }
+
+
+    licenses.forEach(
+      license => {
+
+        const div =
+          document.createElement(
+            "div"
+          );
+
+        div.className =
+          "license";
+
+
+        const active =
+          license.status ===
+          "active";
+
+
+        div.innerHTML = `
+
+          <div class="license-key">
+            🔑 ${escapeHtml(
+              license.license_key
+            )}
+          </div>
+
+          <div class="status ${
+            active
+              ? "active"
+              : "revoked"
+          }">
+
+            ${
+              active
+                ? "🟢 ACTIVE"
+                : "🔴 REVOKED"
+            }
+
+          </div>
+
+          <div class="info">
+
+            Dibuat:
+            ${escapeHtml(
+              license.created_at ||
+              "-"
+            )}
+
+            <br>
+
+            Expired:
+            ${escapeHtml(
+              license.expires_at ||
+              "Tidak ada"
+            )}
+
+            <br>
+
+            Last Seen:
+            ${escapeHtml(
+              license.last_seen ||
+              "-"
+            )}
+
+          </div>
+
+
+          ${
+            active
+
+            ? `
+
+              <button
+                class="deactivate"
+                onclick="changeStatus(
+                  '${escapeJs(
+                    license.license_key
+                  )}',
+                  'revoked'
+                )"
+              >
+                🔴 MATIKAN
+              </button>
+
+            `
+
+            : `
+
+              <button
+                class="activate"
+                onclick="changeStatus(
+                  '${escapeJs(
+                    license.license_key
+                  )}',
+                  'active'
+                )"
+              >
+                🟢 AKTIFKAN
+              </button>
+
+            `
+          }
+
+
+          <button
+            class="delete"
+            onclick="deleteLicense(
+              '${escapeJs(
+                license.license_key
+              )}'
+            )"
+          >
+            🗑️ HAPUS
+          </button>
+
+        `;
+
+
+        container.appendChild(
+          div
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    container.innerHTML =
+      `<p>❌ ${
+        escapeHtml(
+          error.message
+        )
+      }</p>`;
+
+  }
+
+}
+
+
+/* =========================
+   LOAD DEVICES
+========================= */
+
+async function loadDevices() {
+
+  const container =
+    document.getElementById(
+      "devices"
+    );
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/admin/devices`,
+        {
+
+          headers: {
+
+            "Authorization":
+              `Bearer ${adminToken}`
+
+          },
+
+          cache:
+            "no-store"
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
       throw new Error(
         data.message ||
         "Gagal mengambil device."
       );
+
     }
+
+
+    const devices =
+      data.devices || [];
+
+
+    const online =
+      devices.filter(
+        device =>
+          device.status ===
+          "online"
+      ).length;
+
+
+    const offline =
+      devices.filter(
+        device =>
+          device.status ===
+          "offline"
+      ).length;
+
+
+    document
+      .getElementById(
+        "onlineCount"
+      )
+      .textContent =
+        online;
+
+
+    document
+      .getElementById(
+        "offlineCount"
+      )
+      .textContent =
+        offline;
+
 
     container.innerHTML = "";
 
-    if (!data.devices.length) {
+
+    if (!devices.length) {
 
       container.innerHTML =
         "<p>Belum ada perangkat.</p>";
@@ -351,56 +912,109 @@ async function loadDevices() {
 
     }
 
-    data.devices.forEach(device => {
 
-      const div =
-        document.createElement("div");
+    devices.forEach(
+      device => {
 
-      div.className = "license";
+        const div =
+          document.createElement(
+            "div"
+          );
 
-      const online =
-        device.status === "online";
+        div.className =
+          "license";
 
-      div.innerHTML = `
 
-        <div class="license-key">
-          Device:
-          ${escapeHtml(device.device_id.slice(0, 8))}
-        </div>
+        const isOnline =
+          device.status ===
+          "online";
 
-        <div class="status ${online ? "active" : "revoked"}">
-          ${online
-            ? "🟢 ONLINE"
-            : "🔴 OFFLINE"}
-        </div>
 
-        <div class="info">
+        div.innerHTML = `
 
-          License:
-          ${escapeHtml(device.license_key)}
+          <div class="device-id">
 
-          <br>
+            ${
+              escapeHtml(
+                device.device_id
+                  .slice(0, 8)
+                  .toUpperCase()
+              )
+            }
 
-          First Seen:
-          ${escapeHtml(device.first_seen)}
+          </div>
 
-          <br>
 
-          Last Seen:
-          ${escapeHtml(device.last_seen)}
+          <div
+            class="status ${
+              isOnline
+                ? "active"
+                : "revoked"
+            }"
+          >
 
-        </div>
+            ${
+              isOnline
+                ? "🟢 ONLINE"
+                : "🔴 OFFLINE"
+            }
 
-      `;
+          </div>
 
-      container.appendChild(div);
 
-    });
+          <div class="info">
+
+            License:
+            ${escapeHtml(
+              device.license_key
+            )}
+
+            <br>
+
+            First Seen:
+            ${escapeHtml(
+              device.first_seen
+            )}
+
+            <br>
+
+            Last Seen:
+            ${escapeHtml(
+              device.last_seen
+            )}
+
+          </div>
+
+
+          <div class="small">
+
+            ${
+              isOnline
+                ? "Device sedang menggunakan tools."
+                : "Device sudah tidak mengirim heartbeat."
+            }
+
+          </div>
+
+        `;
+
+
+        container.appendChild(
+          div
+        );
+
+      }
+    );
+
 
   } catch (error) {
 
     container.innerHTML =
-      `<p>❌ ${escapeHtml(error.message)}</p>`;
+      `<p>❌ ${
+        escapeHtml(
+          error.message
+        )
+      }</p>`;
 
   }
 
@@ -421,13 +1035,17 @@ async function changeStatus(
       ? "mengaktifkan"
       : "mematikan";
 
+
   if (
     !confirm(
       `Yakin ingin ${action} license ${licenseKey}?`
     )
   ) {
+
     return;
+
   }
+
 
   try {
 
@@ -436,53 +1054,162 @@ async function changeStatus(
         `${API}/admin/license/status`,
         {
 
-          method: "POST",
+          method:
+            "POST",
 
           headers: {
+
             "Content-Type":
               "application/json",
 
             "Authorization":
               `Bearer ${adminToken}`
+
           },
 
-          body: JSON.stringify({
+          body:
+            JSON.stringify({
 
-            license_key:
-              licenseKey,
+              license_key:
+                licenseKey,
 
-            status:
-              status
+              status:
+                status
 
-          })
+            })
 
         }
       );
 
+
     const data =
       await response.json();
+
 
     if (!response.ok) {
 
       throw new Error(
-        data.message || "Gagal mengubah status."
+        data.message ||
+        "Gagal mengubah status."
       );
 
     }
 
-    document.getElementById(
-      "panelMessage"
-    ).textContent =
-      "✅ " + data.message;
+
+    document
+      .getElementById(
+        "panelMessage"
+      )
+      .textContent =
+        "✅ " +
+        data.message;
+
 
     await loadLicenses();
 
+
   } catch (error) {
 
-    document.getElementById(
-      "panelMessage"
-    ).textContent =
-      "❌ " + error.message;
+    document
+      .getElementById(
+        "panelMessage"
+      )
+      .textContent =
+        "❌ " +
+        error.message;
+
+  }
+
+}
+
+
+/* =========================
+   DELETE LICENSE
+========================= */
+
+async function deleteLicense(
+  licenseKey
+) {
+
+  if (
+    !confirm(
+      `Hapus license ${licenseKey}?\n\nSemua data device yang terkait license ini juga akan dihapus.`
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/admin/license/delete`,
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${adminToken}`
+
+          },
+
+          body:
+            JSON.stringify({
+
+              license_key:
+                licenseKey
+
+            })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Gagal menghapus license."
+      );
+
+    }
+
+
+    document
+      .getElementById(
+        "panelMessage"
+      )
+      .textContent =
+        "✅ " +
+        data.message;
+
+
+    await loadLicenses();
+    await loadDevices();
+
+
+  } catch (error) {
+
+    document
+      .getElementById(
+        "panelMessage"
+      )
+      .textContent =
+        "❌ " +
+        error.message;
 
   }
 
@@ -497,14 +1224,27 @@ function logout() {
 
   adminToken = "";
 
-  document.getElementById("panel").style.display =
-    "none";
+  document
+    .getElementById(
+      "panel"
+    )
+    .style.display =
+      "none";
 
-  document.getElementById("login").style.display =
-    "block";
 
-  document.getElementById("adminToken").value =
-    "";
+  document
+    .getElementById(
+      "login"
+    )
+    .style.display =
+      "block";
+
+
+  document
+    .getElementById(
+      "adminToken"
+    )
+    .value = "";
 
 }
 
@@ -516,32 +1256,62 @@ function logout() {
 function escapeHtml(value) {
 
   return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
+
 
 function escapeJs(value) {
 
   return String(value)
-    .replace(/\\/g, "\\\\")
-    .replace(/'/g, "\\'");
+    .replace(
+      /\\/g,
+      "\\\\"
+    )
+    .replace(
+      /'/g,
+      "\\'"
+    );
 
 }
 
-// REFRESH DEVICE SETIAP 10 DETIK
 
-setInterval(() => {
+/* =========================
+   AUTO REFRESH
+========================= */
 
-  if (adminToken) {
+setInterval(
+  () => {
+
+    if (!adminToken) {
+      return;
+    }
+
     loadDevices();
-  }
 
-}, 10000);
-  
+  },
+  10000
+);
+
 </script>
 
 </body>
