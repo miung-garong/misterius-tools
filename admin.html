@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Vins License Admin</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #080808;
+      color: #fff;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #ff2020;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #888;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border-radius: 7px;
+      border: 1px solid #333;
+      background: #080808;
+      color: #fff;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .login-btn {
+      width: 100%;
+      background: #e50909;
+      color: white;
+    }
+
+    .login-btn:hover {
+      background: #ff2020;
+    }
+
+    .logout-btn {
+      background: #333;
+      color: white;
+      float: right;
+    }
+
+    .refresh-btn {
+      background: #222;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .license {
+      border: 1px solid #292929;
+      background: #0c0c0c;
+      padding: 18px;
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+
+    .license-key {
+      font-weight: bold;
+      font-size: 17px;
+      margin-bottom: 10px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .active {
+      background: #123d1d;
+      color: #4dff75;
+    }
+
+    .revoked {
+      background: #3d1212;
+      color: #ff4d4d;
+    }
+
+    .activate {
+      background: #16803a;
+      color: white;
+    }
+
+    .deactivate {
+      background: #b51212;
+      color: white;
+    }
+
+    .info {
+      color: #999;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .message {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    #panel {
+      display: none;
+    }
+
+    .top {
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- LOGIN -->
+
+  <div id="login">
+
+    <h1>VINS LICENSE ADMIN</h1>
+
+    <div class="subtitle">
+      License Management Panel
+    </div>
+
+    <div class="card">
+
+      <input
+        type="password"
+        id="adminToken"
+        placeholder="Masukkan Admin Token"
+      >
+
+      <button
+        class="login-btn"
+        onclick="login()"
+      >
+        LOGIN ADMIN
+      </button>
+
+      <div
+        id="loginMessage"
+        class="message"
+      ></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ADMIN PANEL -->
+
+  <div id="panel">
+
+    <div class="top">
+
+      <h1>VINS LICENSE ADMIN</h1>
+
+      <button
+        class="logout-btn"
+        onclick="logout()"
+      >
+        LOGOUT
+      </button>
+
+      <div class="subtitle">
+        Kelola status license
+      </div>
+
+    </div>
+
+    <button
+      class="refresh-btn"
+      onclick="loadLicenses()"
+    >
+      🔄 REFRESH
+    </button>
+
+    <div id="licenses"></div>
+
+    <div
+      id="panelMessage"
+      class="message"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const API =
+  "https://vins-license-api.alvinstamvans.workers.dev";
+
+let adminToken = "";
+
+
+/* =========================
+   LOGIN
+========================= */
+
+async function login() {
+
+  const token =
+    document.getElementById("adminToken").value.trim();
+
+  if (!token) {
+
+    document.getElementById("loginMessage").textContent =
+      "Admin Token wajib diisi.";
+
+    return;
+  }
+
+  adminToken = token;
+
+  try {
+
+    const response =
+      await fetch(`${API}/admin/licenses`, {
+
+        headers: {
+          "Authorization": `Bearer ${adminToken}`
+        }
+
+      });
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message || "Token salah."
+      );
+
+    }
+
+    document.getElementById("login").style.display =
+      "none";
+
+    document.getElementById("panel").style.display =
+      "block";
+
+    loadLicenses();
+
+  } catch (error) {
+
+    adminToken = "";
+
+    document.getElementById("loginMessage").textContent =
+      "❌ " + error.message;
+
+  }
+
+}
+
+
+/* =========================
+   LOAD LICENSE
+========================= */
+
+async function loadLicenses() {
+
+  const container =
+    document.getElementById("licenses");
+
+  container.innerHTML =
+    "<p>Memuat license...</p>";
+
+  try {
+
+    const response =
+      await fetch(`${API}/admin/licenses`, {
+
+        headers: {
+          "Authorization": `Bearer ${adminToken}`
+        }
+
+      });
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message || "Gagal mengambil data."
+      );
+
+    }
+
+    container.innerHTML = "";
+
+    if (!data.licenses.length) {
+
+      container.innerHTML =
+        "<p>Tidak ada license.</p>";
+
+      return;
+
+    }
+
+    data.licenses.forEach(license => {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "license";
+
+      const isActive =
+        license.status === "active";
+
+      div.innerHTML = `
+
+        <div class="license-key">
+          ${escapeHtml(license.license_key)}
+        </div>
+
+        <div class="status ${isActive ? "active" : "revoked"}">
+          ${isActive ? "🟢 ONLINE" : "🔴 OFFLINE"}
+        </div>
+
+        <div class="info">
+
+          Created:
+          ${license.created_at || "-"}
+          <br>
+
+          Expired:
+          ${license.expires_at || "Tidak ada"}
+          <br>
+
+          Last Seen:
+          ${license.last_seen || "Belum digunakan"}
+
+        </div>
+
+        <br>
+
+        <button
+          class="${isActive ? "deactivate" : "activate"}"
+          onclick="changeStatus(
+            '${escapeJs(license.license_key)}',
+            '${isActive ? "revoked" : "active"}'
+          )"
+        >
+
+          ${isActive
+            ? "🔴 MATIKAN LICENSE"
+            : "🟢 AKTIFKAN LICENSE"}
+
+        </button>
+
+      `;
+
+      container.appendChild(div);
+
+    });
+
+  } catch (error) {
+
+    container.innerHTML =
+      `<p>❌ ${escapeHtml(error.message)}</p>`;
+
+  }
+
+}
+
+
+/* =========================
+   CHANGE STATUS
+========================= */
+
+async function changeStatus(
+  licenseKey,
+  status
+) {
+
+  const action =
+    status === "active"
+      ? "mengaktifkan"
+      : "mematikan";
+
+  if (
+    !confirm(
+      `Yakin ingin ${action} license ${licenseKey}?`
+    )
+  ) {
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/admin/license/status`,
+        {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${adminToken}`
+          },
+
+          body: JSON.stringify({
+
+            license_key:
+              licenseKey,
+
+            status:
+              status
+
+          })
+
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message || "Gagal mengubah status."
+      );
+
+    }
+
+    document.getElementById(
+      "panelMessage"
+    ).textContent =
+      "✅ " + data.message;
+
+    await loadLicenses();
+
+  } catch (error) {
+
+    document.getElementById(
+      "panelMessage"
+    ).textContent =
+      "❌ " + error.message;
+
+  }
+
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout() {
+
+  adminToken = "";
+
+  document.getElementById("panel").style.display =
+    "none";
+
+  document.getElementById("login").style.display =
+    "block";
+
+  document.getElementById("adminToken").value =
+    "";
+
+}
+
+
+/* =========================
+   SECURITY HELPERS
+========================= */
+
+function escapeHtml(value) {
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+function escapeJs(value) {
+
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'");
+
+}
+
+</script>
+
+</body>
+</html>
