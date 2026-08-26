@@ -1,411 +1,288 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Vins License Admin</title>
+<title>Vins License Admin</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #080808;
-      color: #fff;
-      padding: 30px;
-    }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background: #080808;
+  color: #fff;
+  padding: 30px;
+}
 
-    .container {
-      max-width: 1000px;
-      margin: auto;
-    }
+.container {
+  max-width: 1100px;
+  margin: auto;
+}
 
-    h1 {
-      color: #ff2020;
-      margin-bottom: 5px;
-    }
+h1 {
+  color: #ff2020;
+}
 
-    h2 {
-      color: #fff;
-      margin-top: 30px;
-    }
+.card {
+  background: #111;
+  border: 1px solid #292929;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
 
-    .subtitle {
-      color: #888;
-      margin-bottom: 30px;
-    }
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #080808;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 7px;
+}
 
-    .card {
-      background: #111;
-      border: 1px solid #292929;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
+button {
+  border: 0;
+  border-radius: 7px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-    input {
-      width: 100%;
-      padding: 13px;
-      border-radius: 7px;
-      border: 1px solid #333;
-      background: #080808;
-      color: #fff;
-      outline: none;
-      margin-bottom: 12px;
-    }
+.login-btn,
+.create-btn {
+  background: #e50909;
+  color: white;
+}
 
-    button {
-      border: 0;
-      border-radius: 7px;
-      padding: 10px 16px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-right: 6px;
-      margin-bottom: 6px;
-    }
+.login-btn:hover,
+.create-btn:hover {
+  background: #ff2020;
+}
 
-    button:hover {
-      opacity: .85;
-    }
+.refresh-btn {
+  background: #222;
+  color: white;
+  margin-bottom: 15px;
+}
 
-    .login-btn {
-      width: 100%;
-      background: #e50909;
-      color: white;
-    }
+.logout-btn {
+  float: right;
+  background: #333;
+  color: white;
+}
 
-    .logout-btn {
-      background: #333;
-      color: white;
-      float: right;
-    }
+.license-box {
+  background: #101010;
+  border: 1px solid #292929;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
 
-    .refresh-btn {
-      background: #222;
-      color: white;
-    }
+.license-header {
+  padding: 16px;
+  border-bottom: 1px solid #292929;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
 
-    .create-btn {
-      background: #e50909;
-      color: white;
-    }
+.license-title {
+  font-size: 17px;
+  font-weight: bold;
+}
 
-    .generate-btn {
-      background: #333;
-      color: white;
-    }
+.stats {
+  color: #aaa;
+  font-size: 13px;
+}
 
-    .activate {
-      background: #16803a;
-      color: white;
-    }
+.stats span {
+  margin-left: 12px;
+}
 
-    .deactivate {
-      background: #b51212;
-      color: white;
-    }
+.device-head,
+.device-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.4fr;
+  gap: 15px;
+  padding: 14px 16px;
+  align-items: center;
+}
 
-    .delete {
-      background: #444;
-      color: white;
-    }
+.device-head {
+  color: #888;
+  font-size: 12px;
+  text-transform: uppercase;
+}
 
-    .license {
-      border: 1px solid #292929;
-      background: #0c0c0c;
-      padding: 18px;
-      border-radius: 10px;
-      margin-top: 12px;
-    }
+.device-row {
+  border-top: 1px solid #202020;
+}
 
-    .license-key {
-      font-weight: bold;
-      font-size: 17px;
-      margin-bottom: 10px;
-      word-break: break-all;
-    }
+.device-name {
+  font-weight: bold;
+}
 
-    .status {
-      display: inline-block;
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
+.device-id {
+  color: #666;
+  font-size: 11px;
+  margin-top: 5px;
+}
 
-    .active {
-      background: #123d1d;
-      color: #4dff75;
-    }
+.rename-btn {
+  background: #333;
+  color: white;
+  padding: 5px 8px;
+  margin-left: 5px;
+}
 
-    .revoked {
-      background: #3d1212;
-      color: #ff4d4d;
-    }
+.online {
+  color: #4dff75;
+  font-weight: bold;
+}
 
-    .info {
-      color: #999;
-      font-size: 13px;
-      line-height: 1.7;
-      margin-bottom: 10px;
-    }
+.offline {
+  color: #ff4d4d;
+  font-weight: bold;
+}
 
-    .message {
-      margin-top: 12px;
-      font-size: 14px;
-    }
+.last-seen {
+  color: #777;
+  font-size: 11px;
+  margin-top: 5px;
+}
 
-    #panel {
-      display: none;
-    }
+.on-btn {
+  background: #16803a;
+  color: white;
+}
 
-    .top {
-      overflow: hidden;
-      margin-bottom: 25px;
-    }
+.off-btn {
+  background: #b51212;
+  color: white;
+}
 
-    .stats {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
+.delete-btn {
+  background: #333;
+  color: #ff5555;
+  margin-left: 5px;
+}
 
-    .stat {
-      background: #111;
-      border: 1px solid #292929;
-      border-radius: 10px;
-      padding: 15px 20px;
-      min-width: 140px;
-    }
+.message {
+  margin-top: 12px;
+  color: #aaa;
+}
 
-    .stat-number {
-      font-size: 25px;
-      font-weight: bold;
-    }
+#panel {
+  display: none;
+}
 
-    .stat-label {
-      color: #888;
-      font-size: 12px;
-      margin-top: 4px;
-    }
+@media (max-width: 700px) {
 
-    .online-number {
-      color: #4dff75;
-    }
+  .device-head {
+    display: none;
+  }
 
-    .offline-number {
-      color: #ff4d4d;
-    }
+  .device-row {
+    grid-template-columns: 1fr;
+  }
 
-    .device-id {
-      font-family: monospace;
-      font-size: 16px;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-
-    .small {
-      color: #777;
-      font-size: 12px;
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <!-- LOGIN -->
+<!-- LOGIN -->
 
-  <div id="login">
+<div id="login">
 
-    <h1>VINS LICENSE ADMIN</h1>
+<h1>VINS LICENSE ADMIN</h1>
 
-    <div class="subtitle">
-      License Management Panel
-    </div>
+<div class="card">
 
-    <div class="card">
+<input
+type="password"
+id="adminToken"
+placeholder="Masukkan Admin Token"
+>
 
-      <input
-        type="password"
-        id="adminToken"
-        placeholder="Masukkan Admin Token"
-      >
+<button
+class="login-btn"
+onclick="login()"
+>
+LOGIN ADMIN
+</button>
 
-      <button
-        class="login-btn"
-        onclick="login()"
-      >
-        LOGIN ADMIN
-      </button>
+<div id="loginMessage" class="message"></div>
 
-      <div
-        id="loginMessage"
-        class="message"
-      ></div>
+</div>
 
-    </div>
-
-  </div>
+</div>
 
 
-  <!-- ADMIN PANEL -->
+<!-- PANEL -->
 
-  <div id="panel">
+<div id="panel">
 
-    <div class="top">
+<button
+class="logout-btn"
+onclick="logout()"
+>
+LOGOUT
+</button>
 
-      <h1>VINS LICENSE ADMIN</h1>
-
-      <button
-        class="logout-btn"
-        onclick="logout()"
-      >
-        LOGOUT
-      </button>
-
-      <div class="subtitle">
-        Kelola license dan monitor perangkat
-      </div>
-
-    </div>
+<h1>VINS LICENSE ADMIN</h1>
 
 
-    <!-- STATS -->
+<!-- CREATE LICENSE -->
 
-    <div class="stats">
+<div class="card">
 
-      <div class="stat">
-        <div
-          id="licenseCount"
-          class="stat-number"
-        >
-          0
-        </div>
+<h3>➕ CREATE LICENSE</h3>
 
-        <div class="stat-label">
-          TOTAL LICENSE
-        </div>
-      </div>
+<input
+id="newLicenseKey"
+placeholder="License Key (kosong = generate otomatis)"
+>
 
+<button
+class="create-btn"
+onclick="createLicense()"
+>
+CREATE LICENSE
+</button>
 
-      <div class="stat">
-        <div
-          id="onlineCount"
-          class="stat-number online-number"
-        >
-          0
-        </div>
+<div id="createMessage" class="message"></div>
 
-        <div class="stat-label">
-          DEVICE ONLINE
-        </div>
-      </div>
+</div>
 
 
-      <div class="stat">
-        <div
-          id="offlineCount"
-          class="stat-number offline-number"
-        >
-          0
-        </div>
-
-        <div class="stat-label">
-          DEVICE OFFLINE
-        </div>
-      </div>
-
-    </div>
+<button
+class="refresh-btn"
+onclick="loadAll()"
+>
+🔄 REFRESH
+</button>
 
 
-    <!-- CREATE LICENSE -->
+<div id="licenses"></div>
 
-    <div class="card">
+<div id="panelMessage" class="message"></div>
 
-      <h2 style="margin-top:0;">
-        CREATE LICENSE
-      </h2>
-
-      <input
-        id="newLicenseKey"
-        type="text"
-        placeholder="Kosongkan untuk Generate otomatis"
-      >
-
-      <button
-        class="generate-btn"
-        onclick="generateKey()"
-      >
-        🎲 GENERATE KEY
-      </button>
-
-      <button
-        class="create-btn"
-        onclick="createLicense()"
-      >
-        ➕ CREATE LICENSE
-      </button>
-
-      <div
-        id="createMessage"
-        class="message"
-      ></div>
-
-    </div>
-
-
-    <!-- LICENSES -->
-
-    <div class="card">
-
-      <h2 style="margin-top:0;">
-        LICENSES
-      </h2>
-
-      <button
-        class="refresh-btn"
-        onclick="loadLicenses()"
-      >
-        🔄 REFRESH LICENSE
-      </button>
-
-      <div id="licenses"></div>
-
-    </div>
-
-
-    <!-- DEVICES -->
-
-    <div class="card">
-
-      <h2 style="margin-top:0;">
-        DEVICES
-      </h2>
-
-      <div
-        id="devices"
-      >
-        Memuat perangkat...
-      </div>
-
-    </div>
-
-
-    <div
-      id="panelMessage"
-      class="message"
-    ></div>
-
-  </div>
+</div>
 
 </div>
 
@@ -413,904 +290,757 @@
 <script>
 
 const API =
-  "https://vins-license-api.alvinstamvans.workers.dev";
+"https://vins-license-api.alvinstamvans.workers.dev";
 
 let adminToken = "";
 
 
 /* =========================
-   LOGIN
+LOGIN
 ========================= */
 
 async function login() {
 
-  const token =
-    document
-      .getElementById("adminToken")
-      .value
-      .trim();
+const token =
+document.getElementById("adminToken").value.trim();
 
-  if (!token) {
+if (!token) {
 
-    document
-      .getElementById("loginMessage")
-      .textContent =
-        "Admin Token wajib diisi.";
+document.getElementById("loginMessage").textContent =
+"Admin Token wajib diisi.";
 
-    return;
-  }
+return;
 
-  adminToken = token;
+}
 
-  try {
+adminToken = token;
 
-    const response =
-      await fetch(
-        `${API}/admin/licenses`,
-        {
-          headers: {
-            "Authorization":
-              `Bearer ${adminToken}`
-          }
-        }
-      );
+try {
 
-    const data =
-      await response.json();
+const response =
+await fetch(
+`${API}/admin/licenses`,
+{
+headers:{
+"Authorization":
+`Bearer ${adminToken}`
+}
+}
+);
 
-    if (!response.ok) {
+const data =
+await response.json();
 
-      throw new Error(
-        data.message ||
-        "Token salah."
-      );
+if (!response.ok) {
 
-    }
+throw new Error(
+data.message || "Token salah."
+);
 
-    document
-      .getElementById("login")
-      .style.display =
-        "none";
+}
 
-    document
-      .getElementById("panel")
-      .style.display =
-        "block";
+document.getElementById("login").style.display =
+"none";
 
-    loadLicenses();
-    loadDevices();
+document.getElementById("panel").style.display =
+"block";
 
-  } catch (error) {
+loadAll();
 
-    adminToken = "";
+} catch(error) {
 
-    document
-      .getElementById("loginMessage")
-      .textContent =
-        "❌ " + error.message;
+adminToken = "";
 
-  }
+document.getElementById("loginMessage").textContent =
+"❌ " + error.message;
+
+}
 
 }
 
 
 /* =========================
-   GENERATE KEY
+LOAD EVERYTHING
 ========================= */
 
-function generateKey() {
+async function loadAll() {
 
-  const random =
-    crypto.randomUUID()
-      .replace(/-/g, "")
-      .substring(0, 16)
-      .toUpperCase();
-
-  const key =
-    `VINS-${random}`;
-
-  document
-    .getElementById("newLicenseKey")
-    .value =
-      key;
+await loadLicenses();
 
 }
 
 
 /* =========================
-   CREATE LICENSE
-========================= */
-
-async function createLicense() {
-
-  const input =
-    document
-      .getElementById("newLicenseKey");
-
-  let licenseKey =
-    input.value.trim();
-
-
-  const message =
-    document
-      .getElementById("createMessage");
-
-
-  message.textContent =
-    "Membuat license...";
-
-
-  try {
-
-    const response =
-      await fetch(
-        `${API}/admin/license/create`,
-        {
-
-          method: "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            "Authorization":
-              `Bearer ${adminToken}`
-
-          },
-
-          body:
-            JSON.stringify({
-
-              license_key:
-                licenseKey || null
-
-            })
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.message ||
-        "Gagal membuat license."
-      );
-
-    }
-
-
-    input.value = "";
-
-
-    message.textContent =
-      "✅ License berhasil dibuat: " +
-      data.license_key;
-
-
-    await loadLicenses();
-
-
-  } catch (error) {
-
-    message.textContent =
-      "❌ " + error.message;
-
-  }
-
-}
-
-
-/* =========================
-   LOAD LICENSES
+LOAD LICENSE
 ========================= */
 
 async function loadLicenses() {
 
-  const container =
-    document.getElementById(
-      "licenses"
-    );
+const container =
+document.getElementById("licenses");
 
-  container.innerHTML =
-    "<p>Memuat license...</p>";
+container.innerHTML =
+"<p>Memuat license...</p>";
 
+try {
 
-  try {
+const response =
+await fetch(
+`${API}/admin/licenses`,
+{
+headers:{
+"Authorization":
+`Bearer ${adminToken}`
+}
+}
+);
 
-    const response =
-      await fetch(
-        `${API}/admin/licenses`,
-        {
+const data =
+await response.json();
 
-          headers: {
+if (!response.ok) {
 
-            "Authorization":
-              `Bearer ${adminToken}`
+throw new Error(
+data.message ||
+"Gagal mengambil license."
+);
 
-          }
+}
 
-        }
-      );
+container.innerHTML = "";
 
+for (const license of data.licenses) {
 
-    const data =
-      await response.json();
+await createLicenseCard(
+license,
+container
+);
 
+}
 
-    if (!response.ok) {
+if (!data.licenses.length) {
 
-      throw new Error(
-        data.message ||
-        "Gagal mengambil license."
-      );
+container.innerHTML =
+"<p>Belum ada license.</p>";
 
-    }
+}
 
+} catch(error) {
 
-    container.innerHTML = "";
+container.innerHTML =
+`<p>❌ ${escapeHtml(error.message)}</p>`;
 
-
-    const licenses =
-      data.licenses || [];
-
-
-    document
-      .getElementById(
-        "licenseCount"
-      )
-      .textContent =
-        licenses.length;
-
-
-    if (!licenses.length) {
-
-      container.innerHTML =
-        "<p>Belum ada license.</p>";
-
-      return;
-
-    }
-
-
-    licenses.forEach(
-      license => {
-
-        const div =
-          document.createElement(
-            "div"
-          );
-
-        div.className =
-          "license";
-
-
-        const active =
-          license.status ===
-          "active";
-
-
-        div.innerHTML = `
-
-          <div class="license-key">
-            🔑 ${escapeHtml(
-              license.license_key
-            )}
-          </div>
-
-          <div class="status ${
-            active
-              ? "active"
-              : "revoked"
-          }">
-
-            ${
-              active
-                ? "🟢 ACTIVE"
-                : "🔴 REVOKED"
-            }
-
-          </div>
-
-          <div class="info">
-
-            Dibuat:
-            ${escapeHtml(
-              license.created_at ||
-              "-"
-            )}
-
-            <br>
-
-            Expired:
-            ${escapeHtml(
-              license.expires_at ||
-              "Tidak ada"
-            )}
-
-            <br>
-
-            Last Seen:
-            ${escapeHtml(
-              license.last_seen ||
-              "-"
-            )}
-
-          </div>
-
-
-          ${
-            active
-
-            ? `
-
-              <button
-                class="deactivate"
-                onclick="changeStatus(
-                  '${escapeJs(
-                    license.license_key
-                  )}',
-                  'revoked'
-                )"
-              >
-                🔴 MATIKAN
-              </button>
-
-            `
-
-            : `
-
-              <button
-                class="activate"
-                onclick="changeStatus(
-                  '${escapeJs(
-                    license.license_key
-                  )}',
-                  'active'
-                )"
-              >
-                🟢 AKTIFKAN
-              </button>
-
-            `
-          }
-
-
-          <button
-            class="delete"
-            onclick="deleteLicense(
-              '${escapeJs(
-                license.license_key
-              )}'
-            )"
-          >
-            🗑️ HAPUS
-          </button>
-
-        `;
-
-
-        container.appendChild(
-          div
-        );
-
-      }
-    );
-
-
-  } catch (error) {
-
-    container.innerHTML =
-      `<p>❌ ${
-        escapeHtml(
-          error.message
-        )
-      }</p>`;
-
-  }
+}
 
 }
 
 
 /* =========================
-   LOAD DEVICES
+LICENSE CARD
 ========================= */
 
-async function loadDevices() {
-
-  const container =
-    document.getElementById(
-      "devices"
-    );
-
-
-  try {
-
-    const response =
-      await fetch(
-        `${API}/admin/devices`,
-        {
-
-          headers: {
-
-            "Authorization":
-              `Bearer ${adminToken}`
-
-          },
-
-          cache:
-            "no-store"
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.message ||
-        "Gagal mengambil device."
-      );
-
-    }
-
-
-    const devices =
-      data.devices || [];
-
-
-    const online =
-      devices.filter(
-        device =>
-          device.status ===
-          "online"
-      ).length;
-
-
-    const offline =
-      devices.filter(
-        device =>
-          device.status ===
-          "offline"
-      ).length;
-
-
-    document
-      .getElementById(
-        "onlineCount"
-      )
-      .textContent =
-        online;
-
-
-    document
-      .getElementById(
-        "offlineCount"
-      )
-      .textContent =
-        offline;
-
-
-    container.innerHTML = "";
-
-
-    if (!devices.length) {
-
-      container.innerHTML =
-        "<p>Belum ada perangkat.</p>";
-
-      return;
-
-    }
-
-
-    devices.forEach(
-      device => {
-
-        const div =
-          document.createElement(
-            "div"
-          );
-
-        div.className =
-          "license";
-
-
-        const isOnline =
-          device.status ===
-          "online";
-
-
-        div.innerHTML = `
-
-          <div class="device-id">
-
-            ${
-              escapeHtml(
-                device.device_id
-                  .slice(0, 8)
-                  .toUpperCase()
-              )
-            }
-
-          </div>
-
-
-          <div
-            class="status ${
-              isOnline
-                ? "active"
-                : "revoked"
-            }"
-          >
-
-            ${
-              isOnline
-                ? "🟢 ONLINE"
-                : "🔴 OFFLINE"
-            }
-
-          </div>
-
-
-          <div class="info">
-
-            License:
-            ${escapeHtml(
-              device.license_key
-            )}
-
-            <br>
-
-            First Seen:
-            ${escapeHtml(
-              device.first_seen
-            )}
-
-            <br>
-
-            Last Seen:
-            ${escapeHtml(
-              device.last_seen
-            )}
-
-          </div>
-
-
-          <div class="small">
-
-            ${
-              isOnline
-                ? "Device sedang menggunakan tools."
-                : "Device sudah tidak mengirim heartbeat."
-            }
-
-          </div>
-
-        `;
-
-
-        container.appendChild(
-          div
-        );
-
-      }
-    );
-
-
-  } catch (error) {
-
-    container.innerHTML =
-      `<p>❌ ${
-        escapeHtml(
-          error.message
-        )
-      }</p>`;
-
-  }
-
-}
-
-
-/* =========================
-   CHANGE STATUS
-========================= */
-
-async function changeStatus(
-  licenseKey,
-  status
+async function createLicenseCard(
+license,
+container
 ) {
 
-  const action =
-    status === "active"
-      ? "mengaktifkan"
-      : "mematikan";
+const response =
+await fetch(
+`${API}/admin/devices`,
+{
+headers:{
+"Authorization":
+`Bearer ${adminToken}`
+}
+}
+);
+
+const data =
+await response.json();
+
+const devices =
+(data.devices || [])
+.filter(
+device =>
+Number(device.license_id) ===
+Number(license.id)
+);
+
+const now = Date.now();
+
+let onlineCount = 0;
+let onCount = 0;
+let offCount = 0;
+
+devices.forEach(device => {
+
+const last =
+new Date(device.last_seen).getTime();
+
+if (
+now - last <= 90000
+) {
+onlineCount++;
+}
+
+if (
+device.device_status === "active"
+) {
+onCount++;
+} else {
+offCount++;
+}
+
+});
 
 
-  if (
-    !confirm(
-      `Yakin ingin ${action} license ${licenseKey}?`
-    )
-  ) {
+const box =
+document.createElement("div");
 
-    return;
-
-  }
+box.className =
+"license-box";
 
 
-  try {
+box.innerHTML = `
 
-    const response =
-      await fetch(
-        `${API}/admin/license/status`,
-        {
+<div class="license-header">
 
-          method:
-            "POST",
+<div class="license-title">
+🔑 ${escapeHtml(license.license_key)}
+</div>
 
-          headers: {
+<div class="stats">
 
-            "Content-Type":
-              "application/json",
+Device: <b>${devices.length}</b>
 
-            "Authorization":
-              `Bearer ${adminToken}`
+<span>
+OFF: <b>${offCount}</b>
+</span>
 
-          },
+<span>
+ON: <b>${onCount}</b>
+</span>
 
-          body:
-            JSON.stringify({
+</div>
 
-              license_key:
-                licenseKey,
-
-              status:
-                status
-
-            })
-
-        }
-      );
+</div>
 
 
-    const data =
-      await response.json();
+<div class="device-head">
+
+<div>NAMA DEVICE</div>
+<div>STATUS</div>
+<div>KONTROL</div>
+
+</div>
+
+`;
 
 
-    if (!response.ok) {
-
-      throw new Error(
-        data.message ||
-        "Gagal mengubah status."
-      );
-
-    }
+const list =
+document.createElement("div");
 
 
-    document
-      .getElementById(
-        "panelMessage"
-      )
-      .textContent =
-        "✅ " +
-        data.message;
+devices.forEach(device => {
+
+const row =
+document.createElement("div");
+
+row.className =
+"device-row";
 
 
-    await loadLicenses();
+const lastSeen =
+new Date(
+device.last_seen
+).getTime();
 
 
-  } catch (error) {
+const online =
+now - lastSeen <= 90000;
 
-    document
-      .getElementById(
-        "panelMessage"
-      )
-      .textContent =
-        "❌ " +
-        error.message;
 
-  }
+const name =
+device.device_name ||
+device.device_id.slice(0,8);
+
+
+row.innerHTML = `
+
+<div>
+
+<div class="device-name">
+
+${escapeHtml(name)}
+
+<button
+class="rename-btn"
+onclick="renameDevice(
+'${escapeJs(device.device_id)}',
+'${escapeJs(name)}'
+)"
+>
+✏️
+</button>
+
+</div>
+
+<div class="device-id">
+
+${escapeHtml(
+device.device_id
+)}
+
+</div>
+
+</div>
+
+
+<div>
+
+<div class="${
+online
+? "online"
+: "offline"
+}">
+
+${
+online
+? "🟢 ONLINE"
+: "🔴 OFFLINE"
+}
+
+</div>
+
+<div class="last-seen">
+
+Last Seen:
+${escapeHtml(
+device.last_seen
+)}
+
+</div>
+
+</div>
+
+
+<div>
+
+<button
+class="${
+device.device_status === "active"
+? "on-btn"
+: "off-btn"
+}"
+onclick="toggleDevice(
+'${escapeJs(device.device_id)}',
+'${
+device.device_status === "active"
+? "off"
+: "active"
+}'
+)"
+>
+
+${
+device.device_status === "active"
+? "🟢 ON"
+: "🔴 OFF"
+}
+
+</button>
+
+
+<button
+class="delete-btn"
+onclick="deleteDevice(
+'${escapeJs(device.device_id)}'
+)"
+>
+🗑️
+</button>
+
+</div>
+
+`;
+
+list.appendChild(row);
+
+});
+
+
+if (!devices.length) {
+
+list.innerHTML =
+`
+<div style="padding:16px;color:#777">
+Belum ada device untuk license ini.
+</div>
+`;
+
+}
+
+
+box.appendChild(list);
+
+container.appendChild(box);
 
 }
 
 
 /* =========================
-   DELETE LICENSE
+CREATE LICENSE
 ========================= */
 
-async function deleteLicense(
-  licenseKey
-) {
+async function createLicense() {
 
-  if (
-    !confirm(
-      `Hapus license ${licenseKey}?\n\nSemua data device yang terkait license ini juga akan dihapus.`
-    )
-  ) {
+const key =
+document
+.getElementById("newLicenseKey")
+.value
+.trim();
 
-    return;
+try {
 
-  }
+const response =
+await fetch(
+`${API}/admin/license/create`,
+{
 
+method:"POST",
 
-  try {
+headers:{
+"Content-Type":
+"application/json",
 
-    const response =
-      await fetch(
-        `${API}/admin/license/delete`,
-        {
+"Authorization":
+`Bearer ${adminToken}`
+},
 
-          method:
-            "POST",
+body:JSON.stringify({
 
-          headers: {
+license_key:key
 
-            "Content-Type":
-              "application/json",
+})
 
-            "Authorization":
-              `Bearer ${adminToken}`
+}
+);
 
-          },
+const data =
+await response.json();
 
-          body:
-            JSON.stringify({
+if (!response.ok) {
 
-              license_key:
-                licenseKey
+throw new Error(
+data.message ||
+"Gagal membuat license."
+);
 
-            })
+}
 
-        }
-      );
+document.getElementById(
+"createMessage"
+).textContent =
+"✅ " +
+data.license_key;
 
+document.getElementById(
+"newLicenseKey"
+).value = "";
 
-    const data =
-      await response.json();
+await loadLicenses();
 
+} catch(error) {
 
-    if (!response.ok) {
+document.getElementById(
+"createMessage"
+).textContent =
+"❌ " +
+error.message;
 
-      throw new Error(
-        data.message ||
-        "Gagal menghapus license."
-      );
-
-    }
-
-
-    document
-      .getElementById(
-        "panelMessage"
-      )
-      .textContent =
-        "✅ " +
-        data.message;
-
-
-    await loadLicenses();
-    await loadDevices();
-
-
-  } catch (error) {
-
-    document
-      .getElementById(
-        "panelMessage"
-      )
-      .textContent =
-        "❌ " +
-        error.message;
-
-  }
+}
 
 }
 
 
 /* =========================
-   LOGOUT
+RENAME DEVICE
+========================= */
+
+async function renameDevice(
+deviceId,
+oldName
+) {
+
+const name =
+prompt(
+"Masukkan nama perangkat:",
+oldName
+);
+
+if (
+name === null
+) return;
+
+try {
+
+const response =
+await fetch(
+`${API}/admin/device/rename`,
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json",
+
+"Authorization":
+`Bearer ${adminToken}`
+},
+
+body:JSON.stringify({
+
+device_id:deviceId,
+
+device_name:name.trim()
+
+})
+
+}
+);
+
+const data =
+await response.json();
+
+if (!response.ok) {
+
+throw new Error(
+data.message ||
+"Gagal mengubah nama."
+);
+
+}
+
+await loadLicenses();
+
+} catch(error) {
+
+alert(
+"❌ " +
+error.message
+);
+
+}
+
+}
+
+
+/* =========================
+ON / OFF DEVICE
+========================= */
+
+async function toggleDevice(
+deviceId,
+status
+) {
+
+const text =
+status === "active"
+? "mengaktifkan"
+: "mematikan";
+
+if (
+!confirm(
+`Yakin ingin ${text} device ini?`
+)
+) return;
+
+
+try {
+
+const response =
+await fetch(
+`${API}/admin/device/status`,
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json",
+
+"Authorization":
+`Bearer ${adminToken}`
+},
+
+body:JSON.stringify({
+
+device_id:deviceId,
+
+status:status
+
+})
+
+}
+);
+
+const data =
+await response.json();
+
+if (!response.ok) {
+
+throw new Error(
+data.message ||
+"Gagal mengubah status."
+);
+
+}
+
+await loadLicenses();
+
+} catch(error) {
+
+alert(
+"❌ " +
+error.message
+);
+
+}
+
+}
+
+
+/* =========================
+DELETE DEVICE
+========================= */
+
+async function deleteDevice(
+deviceId
+) {
+
+if (
+!confirm(
+"Yakin ingin menghapus device ini?"
+)
+) return;
+
+
+try {
+
+const response =
+await fetch(
+`${API}/admin/device/delete`,
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json",
+
+"Authorization":
+`Bearer ${adminToken}`
+},
+
+body:JSON.stringify({
+
+device_id:deviceId
+
+})
+
+}
+);
+
+const data =
+await response.json();
+
+if (!response.ok) {
+
+throw new Error(
+data.message ||
+"Gagal menghapus device."
+);
+
+}
+
+await loadLicenses();
+
+} catch(error) {
+
+alert(
+"❌ " +
+error.message
+);
+
+}
+
+}
+
+
+/* =========================
+LOGOUT
 ========================= */
 
 function logout() {
 
-  adminToken = "";
+adminToken = "";
 
-  document
-    .getElementById(
-      "panel"
-    )
-    .style.display =
-      "none";
+document.getElementById(
+"panel"
+).style.display =
+"none";
 
+document.getElementById(
+"login"
+).style.display =
+"block";
 
-  document
-    .getElementById(
-      "login"
-    )
-    .style.display =
-      "block";
-
-
-  document
-    .getElementById(
-      "adminToken"
-    )
-    .value = "";
+document.getElementById(
+"adminToken"
+).value = "";
 
 }
 
 
 /* =========================
-   SECURITY HELPERS
+SECURITY
 ========================= */
 
 function escapeHtml(value) {
 
-  return String(value)
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+return String(value)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 
 }
 
 
 function escapeJs(value) {
 
-  return String(value)
-    .replace(
-      /\\/g,
-      "\\\\"
-    )
-    .replace(
-      /'/g,
-      "\\'"
-    );
+return String(value)
+.replace(/\\/g,"\\\\")
+.replace(/'/g,"\\'");
 
 }
 
 
 /* =========================
-   AUTO REFRESH
+AUTO REFRESH
 ========================= */
 
-setInterval(
-  () => {
+setInterval(() => {
 
-    if (!adminToken) {
-      return;
-    }
+if (adminToken) {
 
-    loadDevices();
+loadLicenses();
 
-  },
-  10000
-);
+}
+
+},10000);
 
 </script>
 
